@@ -16,7 +16,7 @@ class MainViewModel: ViewModel() {
     private val _sharedFlow = MutableSharedFlow<Int>()
     val sharedFlow = _sharedFlow.asSharedFlow()
 
-    // Cold flow of data, can only have 1 subscriber
+    // Cold flow of data, can only have 1 subscriber, and will pause when no subscribers, and re-emit all the events when a subscriber is added
     private val channel = Channel<Int>()
     val channelFlow = channel.receiveAsFlow()
 
