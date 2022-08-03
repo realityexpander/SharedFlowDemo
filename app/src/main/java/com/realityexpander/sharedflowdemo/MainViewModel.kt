@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 class MainViewModel: ViewModel() {
 
-    // Hot flow of data, can have multiple subscribers
+    // Hot flow of data, can have multiple subscribers, in multiple places (not just same viewmodel)
     private val _sharedFlow = MutableSharedFlow<Int>()
     val sharedFlow = _sharedFlow.asSharedFlow()
 
@@ -22,7 +22,7 @@ class MainViewModel: ViewModel() {
 
     init {
 
-        // Send the event in the sharedFlow
+        // Send the event in the sharedFlow, useful for session events with multiple observers
         viewModelScope.launch {
             repeat(10000) {
                 _sharedFlow.emit(it)  // still sent if no observers (events are lost if no observers)
@@ -30,7 +30,7 @@ class MainViewModel: ViewModel() {
             }
         }
 
-        // Send the event in the channel
+        // Send the event in the channel, for things like snackbar events with 1 observer
         viewModelScope.launch(Dispatchers.Main.immediate) {  // this is the default dispatcher for ViewModelScope
             repeat(10000) {
                 channel.send(it)
