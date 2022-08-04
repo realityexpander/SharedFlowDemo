@@ -20,6 +20,19 @@ class MainViewModel: ViewModel() {
     private val channel = Channel<Int>()
     val channelFlow = channel.receiveAsFlow()
 
+
+
+    sealed class MyEvent {
+        data class ErrorEvent(val message: String): MyEvent()
+    }
+
+    private val eventChannel = Channel<MyEvent>()
+    val eventFlow = eventChannel.receiveAsFlow()
+
+    fun triggerEvent() = viewModelScope.launch {
+        eventChannel.send(MyEvent.ErrorEvent("This is an error"))
+    }
+
     init {
 
         // Send the event in the sharedFlow, useful for session events with multiple observers

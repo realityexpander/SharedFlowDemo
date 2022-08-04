@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 
 
 // https://www.youtube.com/watch?v=QNrNKPKe5oc (should you use SharedFlow)
+// https://www.youtube.com/watch?v=6v8iJDJdtMc (send onetime events)
 
 class MainActivity : ComponentActivity() {
 
@@ -50,6 +51,18 @@ class MainActivity : ComponentActivity() {
             startService(it)
         }
 
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.eventFlow.collect { event ->
+                when(event) {
+                    is MainViewModel.MyEvent.ErrorEvent -> {
+                        //Snackbar.make(binding.root, event.message, Snackbar.LENGTH_LONG).show()
+                        println("Error: ${event.message}")
+                    }
+                }
+            }
+        }
+
         setContent {
             SharedFlowDemoTheme {
                 // A surface container using the 'background' color from the theme
@@ -59,6 +72,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        viewModel.triggerEvent()
     }
 }
 
