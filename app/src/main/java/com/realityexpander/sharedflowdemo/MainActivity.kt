@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 
 // https://www.youtube.com/watch?v=QNrNKPKe5oc (should you use SharedFlow)
-// https://www.youtube.com/watch?v=6v8iJDJdtMc (send onetime events)
+// https://www.youtube.com/watch?v=6v8iJDJdtMc (use channels to send onetime events)
 
 class MainActivity : ComponentActivity() {
 
