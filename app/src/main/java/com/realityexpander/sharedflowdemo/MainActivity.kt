@@ -6,10 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
@@ -52,23 +53,41 @@ class MainActivity : ComponentActivity() {
         }
 
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.eventFlow.collect { event ->
-                when(event) {
-                    is MainViewModel.MyEvent.ErrorEvent -> {
-                        //Snackbar.make(binding.root, event.message, Snackbar.LENGTH_LONG).show()
-                        println("Error: ${event.message}")
-                    }
-                }
-            }
-        }
+        // Also valid:
+//        lifecycleScope.launchWhenStarted {
+//            viewModel.eventFlow.collect { event ->
+//                when(event) {
+//                    is MainViewModel.MyEvent.ErrorEvent -> {
+//                        //Snackbar.make(binding.root, event.message, Snackbar.LENGTH_LONG).show()
+//                        println("Error: ${event.message}")
+//                    }
+//                }
+//            }
+//        }
 
         setContent {
             SharedFlowDemoTheme {
-                // A surface container using the 'background' color from the theme
+
+                val scope = rememberCoroutineScope()
+                val snackbarHostState = remember { SnackbarHostState() }
+
+                LaunchedEffect(true) {
+                    viewModel.eventFlow.collect { event ->
+                        when(event) {
+                            is MainViewModel.MyEvent.ErrorEvent -> {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(event.message)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Surface(modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background) {
                     Greeting("Android")
+
+                    SnackbarHost(hostState = snackbarHostState)
                 }
             }
         }
