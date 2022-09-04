@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Collect the sharedFlow (may have missing events between onStop and onDestroy)
+        // Collect the sharedFlow - may have missing events between onStop and onDestroy
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {  // cancel during onStop (not onDestroy), restart on onStart (ie: between configuration changes)
                 viewModel.sharedFlow.collect { number ->
@@ -40,6 +40,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // Collect the ChannelFlow - prevents missing events between onStop and onDestroy
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {  // will collect all values
                 viewModel.channelFlow.collect { number ->
